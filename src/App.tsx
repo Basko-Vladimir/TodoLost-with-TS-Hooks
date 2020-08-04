@@ -11,7 +11,7 @@ export function App() {
         {id: v1(), title: 'React & Redux', isDone: true},
         {id: v1(), title: 'Rest API', isDone: false},
         {id: v1(), title: 'GraphQL', isDone: false}
-    ])
+    ]);
 
     const deleteTask = (taskId: string) => {
         const newTasksList = tasks.filter( task => taskId !== task.id )
@@ -19,14 +19,27 @@ export function App() {
     }
 
     const addTask = (newValue: string) => {
-        const newTask = {id: v1(), title: newValue, isDone: false}
-        setTasks([newTask, ...tasks]);
+        // if (newValue.trim() !== '') {
+            const newTask = {id: v1(), title: newValue, isDone: false}
+            setTasks([newTask, ...tasks]);
+        // } else {
+        //     setError('Title is required!')
+        // }
+    }
+
+    const changeTaskStatus = (taskId: string, status: boolean) => {
+        const changedTasks = tasks.map( t => {
+            if (taskId === t.id) {
+                return {...t, isDone: status}
+            } else return t
+        })
+        setTasks(changedTasks);
     }
 
     return (
         <div className="App">
             <TodoList title={'What to learn'} tasks={tasks}
-                      deleteTask={deleteTask} addTask={addTask}/>
+                      deleteTask={deleteTask} addTask={addTask} changeTaskStatus={changeTaskStatus}/>
         </div>
     );
 }
