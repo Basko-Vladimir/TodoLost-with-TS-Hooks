@@ -2,21 +2,23 @@ import React, {useState, ChangeEvent} from 'react';
 import '../App.css';
 import IconButton from '@material-ui/core/IconButton';
 import DeleteForeverIcon from '@material-ui/icons/DeleteForever';
-import {TasksType} from '../Types/commonTypes';
+import {TaskType} from '../Types/commonTypes';
 import {Button} from '@material-ui/core';
 
-export type TodoListType = {
+export type TodoListPropsType = {
     title: string
-    tasks: Array<TasksType>
-    deleteTask: (id: string) => void
-    addTask: (value: string) => void
-    changeTaskStatus: (id: string, status: boolean) => void
+    todoId: string
+    tasks: Array<TaskType>
+    deleteTask: (todoId: string, taskId: string) => void
+    addTask: (todoId: string, value: string) => void
+    changeTaskStatus: (todoId:string, taskId: string, status: boolean) => void
+    deleteTodoList: (todoId: string) => void
 }
 
-export const TodoList: React.FC<TodoListType> = (props) => {
-    const {title, tasks, deleteTask, addTask, changeTaskStatus} = props;
+export const TodoList: React.FC<TodoListPropsType> = (props) => {
+    const {title, todoId, tasks, deleteTask, addTask, changeTaskStatus, deleteTodoList} = props;
 
-    const [filter, setFilter] = useState<string| null>('All');
+    const [filter, setFilter] = useState<string | null>('All');
     const [inputValue, setInputValue] = useState<string>('');
     const [error, setError] = useState<null | string>(null);
     let filteredTasks = tasks;
@@ -44,15 +46,17 @@ export const TodoList: React.FC<TodoListType> = (props) => {
         if (!inputValue.trim()) {
             setError('Title is required!')
         } else {
-            addTask(inputValue);
+            addTask(todoId, inputValue);
             setInputValue('');
         }
-
     }
 
     return (
         <div>
-            <h3>{title}</h3>
+            <h3>{title}
+                <IconButton color="secondary" size={'small'}
+                            onClick={() => deleteTodoList(todoId)}><DeleteForeverIcon/></IconButton>
+            </h3>
             <div>
                 <input value={inputValue} onChange={changeInputValue} className={error ? 'error' : ''}
                        onKeyPress={onKeyPress}/>
@@ -65,13 +69,13 @@ export const TodoList: React.FC<TodoListType> = (props) => {
                 {
                     filteredTasks.map(task => {
                         const changeCheckbox = (e: ChangeEvent<HTMLInputElement>) => {
-                            changeTaskStatus(task.id, e.currentTarget.checked)
+                            changeTaskStatus(todoId, task.id, e.currentTarget.checked)
                         }
                         return <li key={task.id} className={task.isDone ? 'is-done' : ''}>
                             <input type="checkbox" checked={task.isDone} onChange={changeCheckbox}/>
                             <span>{task.title}</span>
                             <IconButton color="secondary" size={'small'}
-                                        onClick={() => deleteTask(task.id)}><DeleteForeverIcon/></IconButton>
+                                        onClick={() => deleteTask(todoId, task.id)}><DeleteForeverIcon/></IconButton>
                         </li>
                     })
                 }
@@ -79,7 +83,8 @@ export const TodoList: React.FC<TodoListType> = (props) => {
             <div>
                 <button onClick={filterTasks} className={filter === 'All' ? 'active-filter' : ''}>All</button>
                 <button onClick={filterTasks} className={filter === 'Active' ? 'active-filter' : ''}>Active</button>
-                <button onClick={filterTasks} className={filter === 'Completed' ? 'active-filter' : ''}>Completed</button>
+                <button onClick={filterTasks} className={filter === 'Completed' ? 'active-filter' : ''}>Completed
+                </button>
             </div>
         </div>
     )
