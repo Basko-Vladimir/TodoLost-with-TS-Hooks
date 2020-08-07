@@ -3,79 +3,68 @@ import '../App.css';
 import IconButton from '@material-ui/core/IconButton';
 import DeleteForeverIcon from '@material-ui/icons/DeleteForever';
 import {TaskType} from '../Types/commonTypes';
-import {Button} from '@material-ui/core';
+import {AddItemFrom} from './AddItemForm';
+import {EditableSpan} from './EditableSpan';
 
 export type TodoListPropsType = {
     title: string
     todoId: string
     tasks: Array<TaskType>
     deleteTask: (todoId: string, taskId: string) => void
-    addTask: (todoId: string, value: string) => void
-    changeTaskStatus: (todoId:string, taskId: string, status: boolean) => void
+    addTask: (value: string, todoId: string) => void
+    changeTaskStatus: (todoId: string, taskId: string, status: boolean) => void
+    changeTaskTitle: (todoId: string, taskId: string, newTitle: string) => void
     deleteTodoList: (todoId: string) => void
+    changeTodoTitle: (todoId: string, newTitle: string) => void
 }
 
 export const TodoList: React.FC<TodoListPropsType> = (props) => {
-    const {title, todoId, tasks, deleteTask, addTask, changeTaskStatus, deleteTodoList} = props;
 
     const [filter, setFilter] = useState<string | null>('All');
-    const [inputValue, setInputValue] = useState<string>('');
-    const [error, setError] = useState<null | string>(null);
-    let filteredTasks = tasks;
+    let filteredTasks = props.tasks;
 
     if (filter === 'Active') {
-        filteredTasks = tasks.filter(t => !t.isDone)
+        filteredTasks = props.tasks.filter(t => !t.isDone)
     } else if (filter === 'Completed') {
-        filteredTasks = tasks.filter(t => t.isDone)
+        filteredTasks = props.tasks.filter(t => t.isDone)
     }
 
     const filterTasks = (e: React.MouseEvent<HTMLButtonElement>) => {
         setFilter(e.currentTarget.textContent)
     }
 
-    const changeInputValue = (e: ChangeEvent<HTMLInputElement>) => {
-        setInputValue(e.currentTarget.value)
+    const addTaskToTodo = (value: string) => {
+        props.addTask(value, props.todoId)
     }
 
-    const onKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
-        setError(null);
-        e.charCode === 13 && onAddTask();
-    }
-
-    const onAddTask = () => {
-        if (!inputValue.trim()) {
-            setError('Title is required!')
-        } else {
-            addTask(todoId, inputValue);
-            setInputValue('');
-        }
+    const changeTodoTitle = (newTitle: string) => {
+        props.changeTodoTitle(props.todoId, newTitle)
     }
 
     return (
         <div>
-            <h3>{title}
+            <h3>
+                <EditableSpan title={props.title} changeTitle={changeTodoTitle}/>
                 <IconButton color="secondary" size={'small'}
-                            onClick={() => deleteTodoList(todoId)}><DeleteForeverIcon/></IconButton>
+                            onClick={() => props.deleteTodoList(props.todoId)}><DeleteForeverIcon/></IconButton>
             </h3>
-            <div>
-                <input value={inputValue} onChange={changeInputValue} className={error ? 'error' : ''}
-                       onKeyPress={onKeyPress}/>
-                <Button variant="contained" color="primary"
-                        size={'small'} style={{marginLeft: '10px'}}
-                        onClick={onAddTask}>+</Button>
-                {error && <div style={{color: 'red'}}>{error}</div>}
-            </div>
+            <AddItemFrom addItem={addTaskToTodo}/>
             <ul>
                 {
                     filteredTasks.map(task => {
                         const changeCheckbox = (e: ChangeEvent<HTMLInputElement>) => {
-                            changeTaskStatus(todoId, task.id, e.currentTarget.checked)
+                            props.changeTaskStatus(props.todoId, task.id, e.currentTarget.checked)
                         }
+
+                        const changeTaskTitle = (newTitle: string) => {
+                            props.changeTaskTitle(props.todoId, task.id, newTitle)
+                        }
+
                         return <li key={task.id} className={task.isDone ? 'is-done' : ''}>
                             <input type="checkbox" checked={task.isDone} onChange={changeCheckbox}/>
-                            <span>{task.title}</span>
+                            <EditableSpan title={task.title} changeTitle={changeTaskTitle}/>
                             <IconButton color="secondary" size={'small'}
-                                        onClick={() => deleteTask(todoId, task.id)}><DeleteForeverIcon/></IconButton>
+                                        onClick={() => props.deleteTask(props.todoId, task.id)}><DeleteForeverIcon/></IconButton>
                         </li>
                     })
                 }
