@@ -5,6 +5,9 @@ import DeleteForeverIcon from '@material-ui/icons/DeleteForever';
 import {TaskType} from '../Types/commonTypes';
 import {AddItemFrom} from './AddItemForm';
 import {EditableSpan} from './EditableSpan';
+import {Button, ButtonGroup, Checkbox} from '@material-ui/core';
+import RadioButtonUncheckedIcon from '@material-ui/icons/RadioButtonUnchecked';
+import OfflinePinIcon from '@material-ui/icons/OfflinePin';
 
 export type TodoListPropsType = {
     title: string
@@ -61,19 +64,26 @@ export const TodoList: React.FC<TodoListPropsType> = (props) => {
                         }
 
                         return <li key={task.id} className={task.isDone ? 'is-done' : ''}>
-                            <input type="checkbox" checked={task.isDone} onChange={changeCheckbox}/>
+                            <Checkbox icon={<RadioButtonUncheckedIcon fontSize="small"/>}
+                                      checkedIcon={<OfflinePinIcon fontSize="small"/>} checked={task.isDone}
+                                      onChange={changeCheckbox} color={'primary'}/>
                             <EditableSpan title={task.title} changeTitle={changeTaskTitle}/>
                             <IconButton color="secondary" size={'small'}
-                                        onClick={() => props.deleteTask(props.todoId, task.id)}><DeleteForeverIcon/></IconButton>
+                                        onClick={() => props.deleteTask(props.todoId, task.id)}>
+                                <DeleteForeverIcon/>
+                            </IconButton>
                         </li>
                     })
                 }
             </ul>
             <div>
-                <button onClick={filterTasks} className={filter === 'All' ? 'active-filter' : ''}>All</button>
-                <button onClick={filterTasks} className={filter === 'Active' ? 'active-filter' : ''}>Active</button>
-                <button onClick={filterTasks} className={filter === 'Completed' ? 'active-filter' : ''}>Completed
-                </button>
+                <ButtonGroup color={'primary'}>
+                    <Button onClick={filterTasks} variant={filter === 'All' ? 'contained' : 'outlined'}>All</Button>
+                    <Button onClick={filterTasks}
+                            variant={filter === 'Active' ? 'contained' : 'outlined'}>Active</Button>
+                    <Button onClick={filterTasks}
+                            variant={filter === 'Completed' ? 'contained' : 'outlined'}>Completed</Button>
+                </ButtonGroup>
             </div>
         </div>
     )

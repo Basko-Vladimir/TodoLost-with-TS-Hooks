@@ -4,6 +4,16 @@ import {TodoList} from './UI/TodoList';
 import {TodoListType, TaskStateType} from './Types/commonTypes';
 import {v1} from 'uuid';
 import {AddItemFrom} from './UI/AddItemForm';
+import AppBar from '@material-ui/core/AppBar';
+import Toolbar from '@material-ui/core/Toolbar';
+import Typography from '@material-ui/core/Typography';
+import Button from '@material-ui/core/Button';
+import IconButton from '@material-ui/core/IconButton';
+import MenuIcon from '@material-ui/icons/Menu';
+import {Container, Grid, Paper} from '@material-ui/core'
+// import Grid from '@material-ui/core/Grid';
+// import Paper from '@material-ui/core/Paper';
+
 
 export function App() {
 
@@ -84,14 +94,41 @@ export function App() {
 
     return (
         <div className="App">
-            <AddItemFrom addItem={addTodoList}/>
-            {
-                todoLists.map(todo => <TodoList key={todo.id} todoId={todo.id} title={todo.title}
-                                                tasks={tasks[todo.id]} deleteTask={deleteTask}
-                                                addTask={addTask} changeTaskStatus={changeTaskStatus}
-                                                deleteTodoList={deleteTodoList} changeTaskTitle={changeTaskTitle}
-                                                changeTodoTitle={changeTodoTitle}/>)
-            }
+            <AppBar position="static">
+                <Toolbar>
+                    <IconButton edge="start" color="inherit" aria-label="menu">
+                        <MenuIcon/>
+                    </IconButton>
+                    <Typography variant="h6">
+                        News
+                    </Typography>
+                    <Button color="inherit">Login</Button>
+                </Toolbar>
+            </AppBar>
+            <Container fixed>
+                <Grid container style={{padding: '20px 0'}}>
+                    <AddItemFrom addItem={addTodoList}/>
+                </Grid>
+                <Grid container spacing={3}>
+                    {
+                        todoLists.map(todo => {
+                            return (
+                                <Grid item>
+                                    <Paper elevation={3} style={{padding: '20px'}}>
+                                        <TodoList key={todo.id} todoId={todo.id} title={todo.title}
+                                                  tasks={tasks[todo.id]} deleteTask={deleteTask}
+                                                  addTask={addTask} changeTaskStatus={changeTaskStatus}
+                                                  deleteTodoList={deleteTodoList}
+                                                  changeTaskTitle={changeTaskTitle}
+                                                  changeTodoTitle={changeTodoTitle}/>
+                                    </Paper>
+
+                                </Grid>
+                            )
+                        })
+                    }
+                </Grid>
+            </Container>
         </div>
     );
 }
