@@ -11,9 +11,6 @@ import Button from '@material-ui/core/Button';
 import IconButton from '@material-ui/core/IconButton';
 import MenuIcon from '@material-ui/icons/Menu';
 import {Container, Grid, Paper} from '@material-ui/core'
-// import Grid from '@material-ui/core/Grid';
-// import Paper from '@material-ui/core/Paper';
-
 
 export function App() {
 
@@ -122,7 +119,6 @@ export function App() {
                                                   changeTaskTitle={changeTaskTitle}
                                                   changeTodoTitle={changeTodoTitle}/>
                                     </Paper>
-
                                 </Grid>
                             )
                         })
